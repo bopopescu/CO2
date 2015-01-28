@@ -8,11 +8,11 @@ class Co2Sensor:
     Classe definissant le capteur de CO2 ainsi que les methodes de lecture de la concentration de CO2
     """
 
-    read_sequence = chr(0xFE) + chr(0x04) + chr(0x00) + chr(0x00) + chr(0x00) + chr(0x01) + chr(0x25) + chr(0xC5)
+    read_sequence = chr(0) + '\xFE\x04\x00\x00\x00\x01\x25\xC5'
 
     sensor_speed = 19200
     sensor_bytesize = serial.EIGHTBITS
-    sensor_port = "\\dev\\ttyUSB0"
+    sensor_port = "/dev/ttyUSB0"
     sensor_parity = serial.PARITY_NONE
     sensor_stopbits = serial.STOPBITS_ONE
 
@@ -64,6 +64,12 @@ class Co2Sensor:
         self.sensor_parity = parity
         self.sensor_stopbits = stopbits
 
+    def write(self):
+        try:
+            self.sensor_con.write(self.read_sequence)
+        except:
+            print('erreur')
+
     def read(self):
         """
         Lecture de la concentration de CO2
@@ -73,3 +79,6 @@ class Co2Sensor:
         self.sensor_con.write(self.read_sequence)
         time.sleep(5)
         return self.sensor_con.read(self.sensor_con.inWaiting())
+
+    def close(self):
+        self.sensor_con.close()
