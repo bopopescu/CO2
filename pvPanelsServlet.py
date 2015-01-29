@@ -2,7 +2,7 @@ import re
 import os
 
 from pelix.ipopo.decorators import ComponentFactory, Property, Provides, Instantiate
-import co2sensor
+import modbus.minimalmodbus as modbus
 
 
 htmlResponseTemplate = ("<html>"
@@ -32,7 +32,8 @@ class SimpleServletFactory(object):
 
     def __init__(self):
         self._path = None
-        self.__sensor = co2sensor.Co2Sensor()
+        self.__sensor = modbus.Instrument('/dev/ttyUSB0', 104)
+        # self.__sensor = modbus.Instrument('COM3', 1)
         self.__urlToFunDic = {
             re.compile('/co2/?$'): self.get_co2_value,
         }
@@ -52,7 +53,11 @@ class SimpleServletFactory(object):
         return None
 
     def get_co2_value(self, reqPath):
-        return 'Capteur indisponible' + reqPath
+        try:
+            value = self.__sensor.read_register(3, 1, 4)
+            return value * 10
+        except IOError:
+            return 'Capteur indisponible'
 
 
     def do_GET(self, request, response):
@@ -78,5 +83,3 @@ class SimpleServletFactory(object):
         content = htmlResponseTemplate % {'body': body}
         response.send_content(retcode, content)
         return
-
-
