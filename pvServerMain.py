@@ -2,12 +2,39 @@
 # -- Content-Encoding: UTF-8 --
 
 
+import subprocess
+from time import sleep
+
 import pelix.framework
 from pelix.ipopo.constants import use_ipopo
 import pelix.shell
+import pifacecad
+import modbus.minimalmodbus as modbus
+
+
+
 
 # Standard library
 import logging
+
+GET_IP_CMD = "hostname --all-ip-addresses"
+SENSOR = modbus.Instrument('/dev/ttyUSB0', 104)
+
+
+def run_cmd(cmd):
+    return subprocess.check_output(cmd, shell=True).decode('utf-8')
+
+
+def get_my_ip():
+    return run_cmd(GET_IP_CMD)[:-1]
+
+
+def get_co2_value():
+    try:
+        value = SENSOR.read_register(3, 1, 4)
+        return str(value * 10)
+    except IOError:
+        return 'Capteur indisponible'
 
 
 class StopListener(object):
@@ -53,8 +80,8 @@ def main():
         ipopo.instantiate('pelix.http.service.basic.factory',
                           'http-server',
                           {
-                              'pelix.http.address': '192.168.1.61',
-                              'pelix.http.port': 3737
+                              'pelix.http.address': '192.168.1.101',  # TODO Utiliser un fichier de conf
+                              'pelix.http.port': 3737  # TODO Utiliser un fichier de conf
                           })
 
     logging.info("Installing PV bundle")
@@ -63,10 +90,29 @@ def main():
     logging.info("PV bundle installed")
     print("PV bundle installed")
 
-    # Wait for the framework to stop
-    framework.wait_for_stop()
+    cad = pifacecad.PiFaceCAD()
 
-# Classic entry point...
+    while True:
+        cad.lcd.clear()
+        cad.lcd.cursor_off()
+        cad.lcd.blink_off()
+        cad.lcd.backlight_off()
+
+        co2 = get_co2_value()
+
+        cad.lcd.write("IP:{}\n".format(run_cmd(GET_IP_CMD)[:-1]))
+        cad.lcd.write("CO2:" + co2 + "\n")
+
+        # TODO Utiliser les interruptions pour capter l'appui
+        if cad.switches[4].value == 1:
+            cad.lcd.backlight_on()
+
+        sleep(5)  # TODO Utiliser une variable + fichier de conf
+
+        # Wait for the framework to stop
+        # framework.wait_for_stop()  # Classic entry point...
+
+
 if __name__ == "__main__":
     FORMAT = '%(asctime)s  %(message)s'
     logging.basicConfig(level=logging.DEBUG, filename='pvService.log', format=FORMAT)
