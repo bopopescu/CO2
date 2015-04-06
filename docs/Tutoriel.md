@@ -61,7 +61,8 @@ $ ls // bien verifier que le dossier n'est pas vide
 Toutes procedures pour la première utilisation du Raspberry Pi ne seront pas détaillé dans ce tutoriel. De nombreux tutoriels sont disponibles sur internet. 
 Les quelques lignes a rajouter sont :
 ```
-$ nano pvServerMain.py ( chercher la ligne " plix.http.address":"...." et remplacer les "...." par l'adresse du Raspberry'
+$ nano pvServerMain.py
+chercher la ligne " plix.http.address":"192.168.1.19" et remplacer 192.168.1.19 par l'adresse IP du Raspberry'
 $ ctrlx
 
 $ sudo raspi-config
