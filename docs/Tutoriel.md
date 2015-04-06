@@ -58,11 +58,46 @@ $ ls // bien verifier que le dossier n'est pas vide
 
 ##Configuration
 
+Toutes procedures pour la première utilisation du Raspberry Pi ne seront pas détaillé dans ce tutoriel. De nombreux tutoriels sont disponibles sur internet. 
+Les quelques lignes a rajouter sont :
+```
+$ nano pvServerMain.py ( chercher la ligne " plix.http.address":"...." et remplacer les "...." par l'adresse du Raspberry'
+$ ctrlx
+
+$ sudo raspi-config
+selctionner advanced options puis spi et cocher Yes
+
+Puis valider le reste des fenêtres.
+```
 
 
 #Procédure d'utilisation
 ##Démarrage
+Une fois le programme installé. Il n'y a pas de procédure spécifique au démarage. Le programme se lancera automatiquement au démarrage du Raspberry Pi.
+Sinon taper la commande suivante:
+```
+	$ python pvServerMain.py
+
+```
+
+> **Nb :** Si il y a l'erreur " serial.serialutil.SerialException:could not open...." c'est que le capteur est non ou mal branché.
 ##consultation sur l'écran
+La consultation de la valeur CO2 sur l'écran se fait par l'appuis sur le bouton poussoir S5 ( pendant 5 secondes ) de la carte d'affichage.
 ##consultation sur web serveur
+Pour lire la valeur depuis le web serveur il suffit de ce connecter au serveur à l'adresse configurée lors de l'installation du programme.
 #Conclusion
+
+Une fois le programme installé dans votre Raspberry Pi, l'utilisation est très intuitive et ne demande aucune intervention. La valeur relevée est alors disponible soit sur le web serveur soit directement sur l'écran de la carte d'affichage. 
+
+Récapitulatif des commandes utilisé:
+```
+$ cd
+$ mkdir CO2
+$ cd CO2
+$ wget https://github.com/IUT1-CO2/CO2/archive/master.zip
+$ tar -xf master.zip
+$ cd CO2-master
+$ ls // bien verifier que le dossier n'est pas vide
+
+```
 > Written with [StackEdit](https://stackedit.io/).
